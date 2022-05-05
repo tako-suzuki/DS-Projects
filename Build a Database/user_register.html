@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+<!-- I want to set a default value(value) but also want to show them in shade (placeholder). Donot know how to implement -->
+{% block body %}
+  
+  <form action="" method="post">
+    {{ form.csrf }}
+
+    <div class="well well-lg">
+      <div class="row">
+        <div class="form-group">
+
+          <h3>Registration</h3>
+          <div class="col-sm-6">
+            <div class="panel-group">
+              <div class="panel panel-default">
+                <div class="panel-body">
+                      <label for="Email">Email:</label>
+                      <!-- <input type="text" class="form-control" id="a" name="a" placeholder="Item_subclass_table (BoardGame)"> -->
+                      <input type="text" class="form-control" name="Email">
+                </div>
+              </div>
+            </div>
+          </div>
+
+        <div class="col-sm-6">
+          <div class="panel-group">
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <label for="Nickname">Nickname:</label>
+                <input type="text" class="form-control" name="Nickname">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-6">
+          <div class="panel-group">
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <label for="Password">Password:</label>
+                <input type="password" class="form-control" name="Password">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-6">
+          <div class="panel-group">
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <label for="Firstname">First name:</label>
+                <input type="text" class="form-control" name="Firstname">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-6">
+          <div class="panel-group">
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <label for="Lastname">Last name:</label>
+                <input type="text" class="form-control" name="Lastname">
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-sm-6">
+          <div class="panel-group">
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <label for="Postcode">Post code:</label>
+                <input type="text" class="form-control" name="Postcode">
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-sm-6">
+          <div class="panel-group">
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <label for="City">City:</label>
+                <!-- <input type="text" class="form-control" name="City"> -->
+                <p>city will be assigned based on the postcode</p>
+                <input name="City" type="hidden" value="placeholder"/>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-sm-6">
+          <div class="panel-group">
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <label for="State">State:</label>
+                <!-- <input type="text" class="form-control" name="State"> -->
+                <p>state will be assigned based on the postcode</p>
+                <input name="State" type="hidden" value="placeholder"/>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-6">
+          <div class="panel-group">
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <label for="Phonenumber">Phone number(Optional):</label>
+                <input type="text" class="form-control" name="Phonenumber" placeholder="xxx-xxx-xxxx">
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-sm-6">
+          <div class="panel-group">
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <label for="Phoneshareable">Phone shareable:</label>
+                <input type="checkbox" value=1 name="Phoneshareable">
+                <input type='hidden' value=0 name='Phoneshareable'>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-6">
+          <div class="panel-group">
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <label for="Phonetype">Phone Type:</label>
+                <select name="Phonetype">
+                  <option value="home">Home</option>
+                  <option value="work">Work</option>
+                  <option value="mobile">Mobile</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    </div>
+    <!--button type="submit" class="btn btn-success">Submit</button-->
+    <button type="submit" class="btn btn-primary btn-block">Submit</button>
+
+  </form>
+
+{% endblock %}

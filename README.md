@@ -2,7 +2,7 @@
 A collection of projects done during internships and current Georgia Tech M.S Computer Science group project. It provides a brief understanding of my domain field.
 
 ## Database System Design
-This is a course work on Database System Design at GT M.S Computer Science. In this group project, we applied methodology and techniques and created an online item-swapping platform which connects with a database system. 
+This is a course work on Database System Design at GT M.S Computer Science. In this group project, we considered the bussiness needs and constrains of this online item-swapping platform; thereby creating a database system that best mirrors how the company utilize the data and retrieve users information. 
 
 The folder includes the Extended Entity-Relationship Model, the Relational Model and SQL queries on each user interaction. I've only included the parts where I've contributed the most and have neglected the front-end codes on the UI design as I have not contributed much. 
 

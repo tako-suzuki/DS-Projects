@@ -1,0 +1,162 @@
+---
+title: "Data Analysis on Sales Information"
+author: "Takako Suzuki"
+date: "04/01/2021"
+output: 
+  html_document:
+    df_print: paged
+    toc: TRUE
+    toc_float: TRUE
+    code_folding: show
+---
+# Introduction
+
+This project will analyze the sales information for the Citrus Hill and Minute Maid brands of orange juice. Since the response variable has two classes, I will be using binary classification model Support Vector Machine and Support Vector Classifier. Using linear decision boundary and non-linear decision boundary by testing our three different types of kernals: linear, radial and polynomial, we compared the model performance with each accuracy rate and error rate. 
+
+Our result shows that linear kernal whether with cross validation or not, it is the best performing model overall. This indicates that the boundary between the two classes is linear; therefore, the linear classifiers in this data performs better in this data set. 
+
+
+```{r, class.source = "fold-show", warning = FALSE, message = FALSE}
+
+library(ISLR)
+library("kableExtra")
+library(tidyverse)
+library(ggplot2)
+library(caret)
+library(e1071)
+
+data(OJ)
+
+```
+
+# Data 
+
+This data contains 1070 purchases and 18 variables on whether the customers purchased Citrus Hill or Minute Maid Orange Juice. The 18 variables include information on each product's sale price, discount, special and brand loyalty. "Purchase" will be used as the dependent variable while the rest are independent variables. 
+
+
+```{r,  class.source = "fold-show"}
+
+data.frame(Variable = names(OJ),
+           Description = c("A factor with levels CH and MM indicating whether the customer purchased Citrus Hill or Minute Maid Orange Juice",
+                           "Week of purchase",
+                           "Store ID",
+                           "Price charged for CH",
+                           "Price charged for MM",
+                           "Discount offered for CH",
+                           "Discount offered for MM",
+                           "Indicator of special on CH",
+                           "Indicator of special on MM",
+                           "Customer brand loyalty for CH",
+                           "Sale price for MM",
+                           "Sale price for CH",
+                           "Sale price of MM less sale price of CH",
+                           "A factor with level No and Yes indicating whether the sale is at store 7",
+                           "Percentage discount for MM",
+                           "Percentage discount for CH",
+                           "List price of MM less list price of CH",
+                           "Which of 5 possible stores the sale occured at"
+          )) %>% kable(caption = "OJ Data") %>% 
+            kable_styling(bootstrap_options = c("striped", "condensed", "bordered"), full_width = F)
+
+```
+# Exploratory Data Analysis
+
+The distribution of DiscCH is right-skewed and the majority of the data is 0. For "SpecialMM" and "SpecialCH" there is uneven distribution and most of the data fall into 0. Therefore, when we are sampling the data, we should use cross validation. 
+
+
+```{r,  class.source = "fold-show", warning=FALSE}
+fac.name = c(8,9)
+OJ[,fac.name] = lapply(OJ[,fac.name], factor)
+
+OJ[,2:6]%>% gather() %>% ggplot(aes(value)) + geom_bar() + facet_wrap(~key, scales="free") 
+OJ[,c(1, 8:9, 14)] %>% gather() %>% ggplot(aes(value, fill=value)) + geom_bar() + facet_wrap(~key, scales="free") 
+      
+```
+
+# Linear
+
+A linear kernel was used with cost of 0.01 and there are 440 support vectors, 221 in one class and 219 in another class. Scale = TRUE is used because our data's distribution is skewed and uneven. In this model, the error rate for train and test is 18.22%. 
+
+Using cross validation, we found the best cost parameter is 0.1 and it has the lowest cross-validation error rate. The model received an accuracy rate of 81.78% and an error rate of 18.22%. In both linear kernal, with cost equal 0.01 and 0.1 received the same accuracy rate and error rate. 
+
+```{r, class.source = "fold-show"}
+set.seed(1)
+train.index = createDataPartition(OJ$Purchase, p=800/1070, list = FALSE)
+train = OJ[train.index,]
+test = OJ[-train.index, ]
+
+svmfit = svm(Purchase ~., data = train, kernel = "linear", cost = 0.01, scale = TRUE)
+
+summary(svmfit)
+pred = predict(svmfit, test)
+table(predict=pred, truth = test$Purchase)
+
+```
+The best cost is equal to 0.1 which gives an accuracy rate of 81.78%. 
+```{r, class.source = "fold-show"}
+set.seed(1)
+tune.out=tune(svm, Purchase~., data=train, kernel="linear",  ranges=list(cost=c(0.01, 0.1, 1,5,10)), scale=TRUE)
+bestmod = tune.out$best.model
+summary(tune.out)
+ypred=predict(bestmod,test)
+table(predict=ypred, truth=test$Purchase)
+
+```
+# Radial
+
+Using a non-linear kernal, "radial", with cost = 0.01 and gamma = 1, we received a fairly low accuracy rate of 60.7% and an error rate of 39.3%. There are 650 support vectors and 338 in one class while the other 312 in another class. Then after performing cross-validation, the model's best choice of gamma = 1 and cost = 10. The accuracy rate has increased to 72.12%. 
+```{r, class.source = "fold-show"}
+svmfit = svm(Purchase ~., data = train, kernel = "radial", cost = 0.01, gamma=1, scale = TRUE)
+summary(svmfit)
+pred = predict(svmfit, test)
+table(predict=pred, truth = test$Purchase)
+```
+Cross-validation
+```{r, class.source = "fold-show"}
+set.seed(1)
+tune.out=tune(svm, Purchase~., data=train, kernel="radial",  scale = TRUE, ranges=list(cost=c(0.01, 0.1, 10, 100,1000), gamma=c(0.5, 1, 2, 3, 4)))
+bestmod = tune.out$best.model
+summary(tune.out)
+ypred=predict(bestmod,test)
+table(predict=ypred, truth=test$Purchase)
+
+
+```
+
+# polynomial kernel
+Lastly, we used polynomial kernel with degree = 2 and received an error rate of 39.03%. There are 435 support vector with 219 in one class and 216 in another class. Then using cross validation, the error rate decreased from 20.07% to 18.22%. The best choice of cost = 10. 
+
+```{r, class.source = "fold-show"}
+svmfit = svm(Purchase ~., data = train, kernel = "polynomial", degree=2, cost = 0.01, scale = TRUE)
+summary(svmfit)
+pred = predict(svmfit, test)
+table(predict=pred, truth = test$Purchase)
+
+```
+Cross validation 
+```{r, class.source = "fold-show"}
+set.seed(1)
+tune.out=tune(svm, Purchase~., data=train, kernel="polynomial",  scale = TRUE, degree=2, ranges=list(cost=c(0.01, 0.1, 10), gamma=c(0.5, 1, 2, 3, 4)))
+bestmod = tune.out$best.model
+summary(tune.out)
+ypred=predict(bestmod,test)
+table(predict=ypred, truth=test$Purchase)
+
+
+```
+
+# Conclusion
+
+We applied Support Vector Machines with binary classification to the OJ data. We aim to use 18 variables such as PriceCH, PriceMM, and DiscCH in order to predict whether the customer purchase Citrus Hill and Minute Maid brand of orange juice. 
+
+We first fitted support vector machine with linear kernal to the training data with cost = 0.01 and then using cross validation to find the best choice of cost and find both accuracy rate as 81.78% respectively. Then we repeat the step with radial kernal and polynomial kernal. 
+
+The result of each model's performance is summarized in the table below. The best performing model is linear kernal and linear kernal with cross validation and polynomial with cross validation. Three of these models have the same accuracy rate. 
+
+```{r, class.source="fold-show"}
+data.frame(Accuracy = c(linear = 0.8178, linear.cv = 0.8178, Radical = 0.607, Radical.cv = 0.7212, Poly= 0.6097, Poly.cv = 0.8178)
+        )  %>% kable(caption = "Support Vector Machine Result") %>% 
+            kable_styling(bootstrap_options = c("striped", "condensed", "bordered"), full_width = F)
+
+
+```
